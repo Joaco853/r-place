@@ -1,23 +1,28 @@
 package rplace.main.rplace;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
 
 import rplace.main.rplace.Color.Color;
 
 
 public class placemain {
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException {
 
 		try (Scanner sc = new Scanner(new File("src\\2022_place_canvas_history.csv"), "UTF-8")){
 			
 			
 			sc.nextLine();
-			int i=1,j=0,k=0;
-			
+			int i=1,j=0,k=0,cuentalineas=0;
+			int width = 2000, height = 2000; 
             int[][] Cord = new int[2000][2000];
+            String[][] Cord_Color = new String[2000][2000];
             int Top_Most_place = 100;
             int[][] Most_Place = new int[3][Top_Most_place+1];
             String st="";
@@ -25,6 +30,16 @@ public class placemain {
             String Color_Name[] = new String[32];
             
 	        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            
+            for (int y = 0; y < height; y++) 
+            { 
+                for (int x = 0; x < width; x++) 
+                { 
+                  Cord_Color[x][y] = "#FFFFFF";
+
+                }}
+            
 
 			while (sc.hasNextLine()) {
 	            String line = sc.nextLine();
@@ -34,7 +49,7 @@ public class placemain {
 	            int Coordinate_Y = 	Integer.parseInt(str[4].substring(0,str[4].length()-1));
 	            
 	            Cord[Coordinate_X][Coordinate_Y]++;
-
+	            Cord_Color[Coordinate_X][Coordinate_Y]= str[2];
 	        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	            
@@ -164,9 +179,45 @@ public class placemain {
 	            		Color_Name[30]="#000000";
 	            		break;
 	            }
+	            
+			    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+	          if(cuentalineas==1600000) {  
+	         // Image file dimensions  
+	            k++;
+	            // Create buffered image object 
+	            BufferedImage img = null; 
+	            img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); 
+	      
+	            // file object 
+	            File f = null; 
+	      
+	            // create random values pixel by pixel 
+	            for (int y = 0; y < height; y++) 
+	            { 
+	                for (int x = 0; x < width; x++) 
+	                { 
+	                    int a = (int)(255); //generating 
+	                    int r = Integer.valueOf(Cord_Color[x][y].substring(1, 3), 16); //values 
+	                    int g = Integer.valueOf(Cord_Color[x][y].substring(3, 5), 16); //less than 
+	                    int b = Integer.valueOf(Cord_Color[x][y].substring(5, 7), 16); //256 
+	      
+	                    int p = (a<<24) | (r<<16) | (g<<8) | b; //pixel 
+	      
+	                    img.setRGB(x, y, p); 
+	                } 
+	            } 
+	      
+	            // write image 
+	            
+	                f = new File("E:\\PB1\\rplace\\src\\place"+k+".png"); 
+	                ImageIO.write(img, "png", f); 
+	            
+	          cuentalineas=0;
+	          }
+	        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	          cuentalineas++;
 	            } 
 			
 			for(i=0;i<2000;i++) {
